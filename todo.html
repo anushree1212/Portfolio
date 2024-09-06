@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> To-Do List</title>
+  <style>
+   /* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+  background-image: url('bbb.jpg');
+  background-size: cover; /* Ensure the image covers the entire background */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-attachment: fixed; /* Keep the background fixed while scrolling */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  height: 100vh; /* Make the body fill the entire height of the viewport */
+  margin: 0; /* Remove default margin to avoid scrolling */
+}
+
+
+/* Container Styling */
+.container {
+  background-color: lavender;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Heading Styles */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+}
+
+/* New Task Input Section */
+.new-task {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input[type="text"], input[type="date"], select {
+  padding: 12px 15px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease-in-out;
+}
+
+input[type="text"]:focus, input[type="date"]:focus, select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+/* Button Styling */
+button {
+  padding: 12px;
+  background-color: #4a90e2;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #357ab9;
+}
+
+/* Task List Section */
+.tasks {
+  margin-top: 30px;
+}
+
+.tasks h2 {
+  font-size: 24px;
+  color: #444;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Task Items Styling */
+ul {
+  list-style: none;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f8f8;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+li:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+li.completed {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.priority-low {
+  border-left: 6px solid #68b684;
+}
+
+.priority-medium {
+  border-left: 6px solid #f0ad4e;
+}
+
+.priority-high {
+  border-left: 6px solid #d9534f;
+}
+
+/* Task Actions - Delete Button */
+.delete-btn {
+  background-color: transparent;
+  color: #d9534f;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: color 0.3s ease-in-out;
+}
+
+.delete-btn:hover {
+  color: #a94442;
+}
+
+/* Search and Filter Section */
+.filter-options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.filter-options input[type="text"] {
+  flex-grow: 1;
+  margin-right: 10px;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.filter-options button {
+  padding: 10px;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-options button:hover {
+  background-color: #e2e6ea;
+}
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  input[type="text"], input[type="date"], select {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 14px;
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    padding: 12px;
+  }
+
+  .filter-options input[type="text"] {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .filter-options {
+    flex-direction: column;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    
+    <div class="new-task">
+      <input type="text" id="task-input" placeholder="Add a new task..." />
+      <input type="date" id="due-date" />
+      <select id="priority">
+        <option value="low">Low Priority</option>
+        <option value="medium">Medium Priority</option>
+        <option value="high">High Priority</option>
+      </select>
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="filter-options">
+      <input type="text" id="search" placeholder="Search tasks..." onkeyup="searchTasks()" />
+      <button onclick="filterTasks('all')">All</button>
+      <button onclick="filterTasks('completed')">Completed</button>
+      <button onclick="filterTasks('incomplete')">Incomplete</button>
+    </div>
+
+    <div class="tasks">
+      <h2>Your Tasks</h2>
+      <ul id="task-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Initialize task array from local storage or empty array
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    
+    // Add a new task
+    function addTask() {
+      const taskInput = document.getElementById('task-input').value.trim();
+      const dueDate = document.getElementById('due-date').value;
+      const priority = document.getElementById('priority').value;
+    
+      if (taskInput) {
+        const newTask = {
+          id: Date.now(),
+          text: taskInput,
+          dueDate: dueDate || 'No date',
+          priority: priority,
+          completed: false
+        };
+    
+        // Add task to the tasks array
+        tasks.push(newTask);
+        
+        // Save tasks array to local storage
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    
+        // Display updated tasks list
+        displayTasks();
+    
+        // Clear the input fields after adding a task
+        clearInputs();
+      } else {
+        alert('Please enter a task!');
+      }
+    }
+    
+    // Display all tasks or filtered tasks
+    function displayTasks(filter = 'all', searchResults = null) {
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+    
+      // Determine tasks to display based on filter or search results
+      const filteredTasks = searchResults || tasks.filter(task => {
+        if (filter === 'all') return true;
+        if (filter === 'completed') return task.completed;
+        if (filter === 'incomplete') return !task.completed;
+        return true;
+      });
+    
+      // Create task list items
+      filteredTasks.forEach(task => {
+        const taskItem = document.createElement('li');
+        taskItem.className = `${task.priority ? `priority-${task.priority}` : ''} ${task.completed ? 'completed' : ''}`;
+    
+        taskItem.innerHTML = `
+          <span onclick="toggleCompletion(${task.id})">
+            ${task.text} (Due: ${task.dueDate})
+          </span>
+          <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+        `;
+    
+        taskList.appendChild(taskItem);
+      });
+    
+      // If no tasks are available
+      if (filteredTasks.length === 0) {
+        taskList.innerHTML = '<p>No tasks to display</p>';
+      }
+    }
+    
+    // Toggle task completion
+    function toggleCompletion(id) {
+      tasks = tasks.map(task => {
+        if (task.id === id) {
+          task.completed = !task.completed;
+        }
+        return task;
+      });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      displayTasks();
+    }
+    
+    // Delete a task
+    function deleteTask(id) {
+      tasks = tasks.filter(task => task.id !== id);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      displayTasks();
+    }
+    
+    // Search tasks by text
+    function searchTasks() {
+      const searchQuery = document.getElementById('search').value.toLowerCase();
+      const filteredTasks = tasks.filter(task => task.text.toLowerCase().includes(searchQuery));
+      displayTasks('all', filteredTasks);
+    }
+    
+    // Filter tasks based on completion status
+    function filterTasks(status) {
+      displayTasks(status);
+    }
+    
+    // Clear input fields
+    function clearInputs() {
+      document.getElementById('task-input').value = '';
+      document.getElementById('due-date').value = '';
+      document.getElementById('priority').value = 'low';
+    }
+    
+    // Display tasks on page load
+    window.onload = function () {
+      displayTasks();
+    };
+    </script>
+    
+</body>
+</html>

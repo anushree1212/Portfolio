@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anam's Game !!!</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: lightskyblue;
+    }
+    
+    .container {
+        text-align: center;
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+    }
+    
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        cursor: pointer;
+        border: 2px solid #000;
+    }
+    
+    #resetButton {
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+    }
+    
+    #status {
+        margin-top: 20px;
+        font-size: 1.2em;
+    }
+</style>  
+</head>
+<body>
+    <div class="container">
+        <h1>Anam's Game !!!</h1>
+        <div class="game-board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <button id="resetButton">Reset Game</button>
+        <p id="status"></p>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        const cells = document.querySelectorAll('.cell');
+const statusText = document.getElementById('status');
+const resetButton = document.getElementById('resetButton');
+
+let currentPlayer = 'X';
+let gameState = ['', '', '', '', '', '', '', '', ''];
+const winningConditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
+function handleCellPlayed(clickedCell, clickedCellIndex) {
+    gameState[clickedCellIndex] = currentPlayer;
+    clickedCell.innerHTML = currentPlayer;
+}
+
+function handlePlayerChange() {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    statusText.innerHTML = `Player ${currentPlayer}'s turn`;
+}
+
+function handleResultValidation() {
+    let roundWon = false;
+    for (let i = 0; i < winningConditions.length; i++) {
+        const winCondition = winningConditions[i];
+        let a = gameState[winCondition[0]];
+        let b = gameState[winCondition[1]];
+        let c = gameState[winCondition[2]];
+        if (a === '' || b === '' || c === '') {
+            continue;
+        }
+        if (a === b && b === c) {
+            roundWon = true;
+            break;
+        }
+    }
+
+    if (roundWon) {
+        statusText.innerHTML = `Player ${currentPlayer} has won!`;
+        cells.forEach(cell => cell.removeEventListener('click', handleCellClick));
+        return;
+    }
+
+    let roundDraw = !gameState.includes('');
+    if (roundDraw) {
+        statusText.innerHTML = `Game ended in a draw!`;
+        return;
+    }
+
+    handlePlayerChange();
+}
+
+function handleCellClick(event) {
+    const clickedCell = event.target;
+    const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+    if (gameState[clickedCellIndex] !== '') {
+        return;
+    }
+
+    handleCellPlayed(clickedCell, clickedCellIndex);
+    handleResultValidation();
+}
+
+function handleRestartGame() {
+    currentPlayer = 'X';
+    gameState = ['', '', '', '', '', '', '', '', ''];
+    statusText.innerHTML = `Player ${currentPlayer}'s turn`;
+    cells.forEach(cell => {
+        cell.innerHTML = '';
+        cell.addEventListener('click', handleCellClick);
+    });
+}
+
+cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+resetButton.addEventListener('click', handleRestartGame);
+
+handleRestartGame();
+
+    </script>
+</body>
+</html>
